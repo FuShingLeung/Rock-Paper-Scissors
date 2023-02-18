@@ -84,7 +84,7 @@ const initialiseGame = () => {
   }
 };
 
-export const updateScore = () => {
+export const updateScoreText = () => {
   userScoreDisplay.replaceChildren(
     `${getStorage('username')}: ${getStorage('userScore')}`,
   );
@@ -149,13 +149,13 @@ export const updateOutcomeIcons = (userOption, compOption) => {
 const resetGame = () => {
   matchHistoryCarousel.innerHTML = '';
   initialiseLocalStorage();
-  updateScore();
+  updateScoreText();
   showGamemodeSelector();
 };
 
 // Checks if there was a previous game and renders it if there was
 initialiseGame();
-updateScore();
+updateScoreText();
 
 // Event Bindings
 

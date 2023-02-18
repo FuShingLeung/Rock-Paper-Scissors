@@ -1,12 +1,14 @@
 import {
   updateOutcomeIcons,
   updateGameState,
-  updateScore,
+  updateScoreText,
   updateResultScreen,
   showGame,
 } from './index.js';
 
 import { setStorage, getStorage } from './storage.js';
+
+import { GameRound, saveGameRound } from './gameState.js';
 
 const myCarouselElement = document.querySelector('#matchCarousel');
 
@@ -65,7 +67,7 @@ export const onGamemodeClick = (gamemode) => {
     window.alert('Please enter a username!');
   } else {
     setStorage('gamemode', gamemode);
-    updateScore();
+    updateScoreText();
     showGame();
   }
 };
@@ -74,12 +76,23 @@ export const onGamemodeClick = (gamemode) => {
 export const onPlayClick = (userOutcome, matchHistoryCarousel) => {
   let roundNumber = getStorage('roundNumber');
   setStorage('roundNumber', ++roundNumber);
+  console.log(roundNumber);
 
   const compOutcome = performCompRoll();
   updateOutcomeIcons(userOutcome, compOutcome);
 
   updateGameState(determineResult(userOutcome, compOutcome));
-  updateScore();
+  updateScoreText();
+
+  const gameRound = new GameRound(
+    roundNumber,
+    getStorage('userScore'),
+    getStorage('compScore'),
+    getStorage('tieScore'),
+    userOutcome,
+    compOutcome,
+  );
+  saveGameRound(gameRound);
 
   matchHistoryCarousel.append(
     createMatchHistoryDiv(

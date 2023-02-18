@@ -77,9 +77,8 @@ export const onPlayClick = (userOutcome, matchHistoryCarousel) => {
   setStorage('roundNumber', ++roundNumber);
 
   const compOutcome = performCompRoll();
-  const result = determineResult(userOutcome, compOutcome);
 
-  updateGameState(result);
+  updateGameState(determineResult(userOutcome, compOutcome));
   updateScoreText();
 
   const gameRound = new GameRound(
@@ -99,7 +98,6 @@ export const onPlayClick = (userOutcome, matchHistoryCarousel) => {
       gameRound,
       matchHistoryCarousel.innerHTML == '',
       false,
-      result,
     ),
   );
   carousel.to(roundNumber - 1);
@@ -158,7 +156,6 @@ export const generateGameRoundMatchHistoryDiv = (
   gameRound,
   isFirst,
   isLast,
-  gameOutcome,
 ) => {
   // Make div for each match in match history
   const div = document.createElement('div');
@@ -175,9 +172,10 @@ export const generateGameRoundMatchHistoryDiv = (
   // Make p for round score
   const roundNumberP = document.createElement('p');
   roundNumberP.className = 'round-number';
-  if (gameOutcome == 'win') {
+  const result = determineResult(gameRound.userOutcome, gameRound.compOutcome);
+  if (result == 'win') {
     roundNumberP.classList.add('text-success');
-  } else if (gameOutcome == 'loss') {
+  } else if (result == 'loss') {
     roundNumberP.classList.add('text-danger');
   } else {
     roundNumberP.classList.add('text-warning');

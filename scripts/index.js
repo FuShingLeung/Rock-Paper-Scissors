@@ -9,8 +9,6 @@ import {
 
 import { initialiseLocalStorage, setStorage, getStorage } from './storage.js';
 
-import { loadMatchHistory } from './gameState.js';
-
 // State
 
 // Element
@@ -38,7 +36,7 @@ const userPaper = document.querySelector('.paper');
 const userScissors = document.querySelector('.scissors');
 const resets = document.querySelectorAll('.reset');
 
-const matchHistoryCarousel = document.querySelector('#carousel-inner');
+const matchHistoryCarouselDiv = document.querySelector('#carousel-inner');
 
 // Elements within the results container
 const gameResult = document.getElementById('result');
@@ -85,7 +83,7 @@ const initialiseGame = () => {
   } else {
     showGame();
     checkHasGameFinished();
-    loadSavedMatchHistory(matchHistoryCarousel);
+    loadSavedMatchHistory(matchHistoryCarouselDiv);
     loadPreviousMatchOutcome();
   }
 };
@@ -146,13 +144,13 @@ export const updateResultScreen = () => {
 };
 
 // Updates the player and computer's images depending on what options they picked (rock, paper or scissors)
-export const updateOutcomeIcons = (userOption, compOption) => {
+export const updateCurrentRoundOutcomeIcons = (userOption, compOption) => {
   userImage.replaceChildren(createIcon(userOption, false));
   compImage.replaceChildren(createIcon(compOption, true));
 };
 
 const resetImages = () => {
-  matchHistoryCarousel.innerHTML = '';
+  matchHistoryCarouselDiv.innerHTML = '';
   userImage.innerHTML = '';
   compImage.innerHTML = '';
 };
@@ -190,15 +188,15 @@ unlimited.addEventListener('click', () => {
 
 // Updates game based on user's choice
 userRock.addEventListener('click', () => {
-  onPlayClick(1, matchHistoryCarousel);
+  onPlayClick(1, matchHistoryCarouselDiv);
 });
 
 userPaper.addEventListener('click', () => {
-  onPlayClick(2, matchHistoryCarousel);
+  onPlayClick(2, matchHistoryCarouselDiv);
 });
 
 userScissors.addEventListener('click', () => {
-  onPlayClick(3, matchHistoryCarousel);
+  onPlayClick(3, matchHistoryCarouselDiv);
 });
 
 // Resets game

@@ -1,5 +1,5 @@
 import {
-  updateOutcomeIcons,
+  updateCurrentRoundOutcomeIcons,
   updateGameState,
   updateScoreText,
   updateResultScreen,
@@ -14,7 +14,7 @@ const usernameForm = document.forms['username'];
 
 const matchCarouselElement = document.querySelector('#matchCarousel');
 
-const carousel = new bootstrap.Carousel(matchCarouselElement, {
+const matchHistoryCarousel = new bootstrap.Carousel(matchCarouselElement, {
   interval: 2000,
   touch: false,
 });
@@ -72,7 +72,7 @@ export const onGamemodeClick = (gamemode) => {
 };
 
 // Function
-export const onPlayClick = (userOutcome, matchHistoryCarousel) => {
+export const onPlayClick = (userOutcome, matchHistoryCarouselDiv) => {
   let roundNumber = getStorage('roundNumber');
   setStorage('roundNumber', ++roundNumber);
 
@@ -92,15 +92,14 @@ export const onPlayClick = (userOutcome, matchHistoryCarousel) => {
   );
   saveGameRound(gameRound);
 
-  updateOutcomeIcons(gameRound.userOutcome, gameRound.compOutcome);
-  matchHistoryCarousel.append(
-    generateGameRoundMatchHistoryDiv(
+  updateCurrentRoundOutcomeIcons(gameRound.userOutcome, gameRound.compOutcome);
+  matchHistoryCarouselDiv.append(
+    generateMatchHistoryGameRoundDiv(
       gameRound,
-      matchHistoryCarousel.innerHTML == '',
-      false,
+      matchHistoryCarouselDiv.innerHTML == '',
     ),
   );
-  carousel.to(roundNumber - 1);
+  matchHistoryCarousel.to(roundNumber - 1);
 };
 
 // Creates an icon that can be either rock paper or scissors
@@ -126,44 +125,38 @@ export const createIcon = (option, isSolid) => {
 
 export const loadPreviousMatchOutcome = () => {
   if (getStorage('matchHistory')) {
-    const gameRound = loadMatchHistory();
-    updateOutcomeIcons(
-      gameRound[gameRound.length - 1].userOutcome,
-      gameRound[gameRound.length - 1].compOutcome,
+    const matchHistory = loadMatchHistory();
+    updateCurrentRoundOutcomeIcons(
+      matchHistory[matchHistory.length - 1].userOutcome,
+      matchHistory[matchHistory.length - 1].compOutcome,
     );
   }
 };
 
-export const loadSavedMatchHistory = (matchHistoryCarousel) => {
+export const loadSavedMatchHistory = (matchHistoryCarouselDiv) => {
   if (getStorage('matchHistory')) {
     const matchHistory = loadMatchHistory();
     for (let gameRound of matchHistory) {
       if (gameRound == matchHistory[matchHistory.length - 1]) {
-        matchHistoryCarousel.append(
-          generateGameRoundMatchHistoryDiv(gameRound, false, true),
+        matchHistoryCarouselDiv.append(
+          generateMatchHistoryGameRoundDiv(gameRound, true),
         );
-        carousel.to(matchHistory.length - 1);
+        matchHistoryCarousel.to(matchHistory.length - 1);
       } else {
-        matchHistoryCarousel.append(
-          generateGameRoundMatchHistoryDiv(gameRound, false, false),
+        matchHistoryCarouselDiv.append(
+          generateMatchHistoryGameRoundDiv(gameRound, false),
         );
       }
     }
   }
 };
 
-export const generateGameRoundMatchHistoryDiv = (
-  gameRound,
-  isFirst,
-  isLast,
-) => {
+export const generateMatchHistoryGameRoundDiv = (gameRound, setActive) => {
   // Make div for each match in match history
   const div = document.createElement('div');
 
   // Check if it is the first or last game round to add the active class
-  if (isFirst) {
-    div.className = 'carousel-item round-score active';
-  } else if (isLast) {
+  if (setActive) {
     div.className = 'carousel-item round-score active';
   } else {
     div.className = 'carousel-item round-score';
@@ -174,11 +167,11 @@ export const generateGameRoundMatchHistoryDiv = (
   roundNumberP.className = 'round-number';
   const result = determineResult(gameRound.userOutcome, gameRound.compOutcome);
   if (result == 'win') {
-    roundNumberP.classList.add('text-success');
+    roundNumberP.style = 'color: hsl(120, 60%, 50%);';
   } else if (result == 'loss') {
-    roundNumberP.classList.add('text-danger');
+    roundNumberP.style = 'color: hsl(0, 60%, 50%);';
   } else {
-    roundNumberP.classList.add('text-warning');
+    roundNumberP.style = 'color: hsl(60, 50%, 50%);';
   }
   roundNumberP.textContent = `Round ${gameRound.roundNumber}`;
   div.append(roundNumberP);

@@ -8,4 +8,5 @@ A Rock Paper Scissors game that you can play versus a computer built with Javasc
 - Enter your own username
 
 **Game in action**
+
 ![game-demo](https://user-images.githubusercontent.com/108557504/219899358-eef9da74-9f03-4772-a10d-35dd427be4b4.gif)

@@ -3,8 +3,8 @@ import {
   onPlayClick,
   checkHasGameFinished,
   onGamemodeClick,
-  generateGameRoundMatchHistoryDiv,
   loadSavedMatchHistory,
+  loadPreviousMatchOutcome,
 } from './DOM-methods.js';
 
 import { initialiseLocalStorage, setStorage, getStorage } from './storage.js';
@@ -86,11 +86,7 @@ const initialiseGame = () => {
     showGame();
     checkHasGameFinished();
     loadSavedMatchHistory(matchHistoryCarousel);
-    const gameRound = loadMatchHistory();
-    updateOutcomeIcons(
-      gameRound[gameRound.length - 1].userOutcome,
-      gameRound[gameRound.length - 1].compOutcome,
-    );
+    loadPreviousMatchOutcome();
   }
 };
 
@@ -155,9 +151,15 @@ export const updateOutcomeIcons = (userOption, compOption) => {
   compImage.replaceChildren(createIcon(compOption, true));
 };
 
+const resetImages = () => {
+  matchHistoryCarousel.innerHTML = '';
+  userImage.innerHTML = '';
+  compImage.innerHTML = '';
+};
+
 // Resets everything
 const resetGame = () => {
-  matchHistoryCarousel.innerHTML = '';
+  resetImages();
   initialiseLocalStorage();
   updateScoreText();
   showGamemodeSelector();

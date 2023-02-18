@@ -83,14 +83,17 @@
           <div class="alert text-primary">
             <p id="alert-message">Rock, Paper or Scissors?</p>
             <div class="scoreboard mb-0 text-dark">
-              <div class="user-score-container game-score" id="user-score">
+              <div
+                class="user-score-container game-score text-success"
+                id="user-score"
+              >
                 <p>User: 0</p>
               </div>
-              <div class="comp-score-container game-score">
+              <div class="comp-score-container game-score text-danger">
                 <span>Comp:</span>
                 <span class="comp-score" id="comp-score">0</span>
               </div>
-              <div class="tie-score-container game-score">
+              <div class="tie-score-container game-score text-warning">
                 <span>Ties:</span>
                 <span class="tie-score" id="tie-score">0</span>
               </div>
@@ -179,7 +182,7 @@
 
       <section class="result hide" id="result">
         <div class="result-container">
-          <h2 class="alert text-primary result-message">You won!</h2>
+          <h2 class="alert text-primary result-message"></h2>
           <h2 class="alert text-primary result-message-score">
             User: 0| Comp: 0
           </h2>

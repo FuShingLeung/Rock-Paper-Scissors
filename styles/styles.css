@@ -19,18 +19,6 @@
   gap: 2em;
 }
 
-.user-score-container {
-  color: hsl(120, 60%, 50%);
-}
-
-.comp-score-container {
-  color: hsl(0, 60%, 50%);
-}
-
-.tie-score-container {
-  color: hsl(60deg, 50%, 50%);
-}
-
 .win {
   color: hsl(120, 60%, 50%);
 }

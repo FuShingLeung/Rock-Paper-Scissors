@@ -61,7 +61,6 @@ const setUsername = (form) => {
   }
 };
 
-//
 export const onGamemodeClick = (gamemode) => {
   if (!setUsername(usernameForm)) {
     window.alert('Please enter a username!');
@@ -76,11 +75,11 @@ export const onGamemodeClick = (gamemode) => {
 export const onPlayClick = (userOutcome, matchHistoryCarousel) => {
   let roundNumber = getStorage('roundNumber');
   setStorage('roundNumber', ++roundNumber);
-  console.log(roundNumber);
 
   const compOutcome = performCompRoll();
+  const result = determineResult(userOutcome, compOutcome);
 
-  updateGameState(determineResult(userOutcome, compOutcome));
+  updateGameState(result);
   updateScoreText();
 
   const gameRound = new GameRound(
@@ -100,6 +99,7 @@ export const onPlayClick = (userOutcome, matchHistoryCarousel) => {
       gameRound,
       matchHistoryCarousel.innerHTML == '',
       false,
+      result,
     ),
   );
   carousel.to(roundNumber - 1);
@@ -126,18 +126,30 @@ export const createIcon = (option, isSolid) => {
   return icon;
 };
 
+export const loadPreviousMatchOutcome = () => {
+  if (getStorage('matchHistory')) {
+    const gameRound = loadMatchHistory();
+    updateOutcomeIcons(
+      gameRound[gameRound.length - 1].userOutcome,
+      gameRound[gameRound.length - 1].compOutcome,
+    );
+  }
+};
+
 export const loadSavedMatchHistory = (matchHistoryCarousel) => {
-  const matchHistory = loadMatchHistory();
-  for (let gameRound of matchHistory) {
-    if (gameRound == matchHistory[matchHistory.length - 1]) {
-      matchHistoryCarousel.append(
-        generateGameRoundMatchHistoryDiv(gameRound, false, true),
-      );
-      carousel.to(matchHistory.length - 1);
-    } else {
-      matchHistoryCarousel.append(
-        generateGameRoundMatchHistoryDiv(gameRound, false, false),
-      );
+  if (getStorage('matchHistory')) {
+    const matchHistory = loadMatchHistory();
+    for (let gameRound of matchHistory) {
+      if (gameRound == matchHistory[matchHistory.length - 1]) {
+        matchHistoryCarousel.append(
+          generateGameRoundMatchHistoryDiv(gameRound, false, true),
+        );
+        carousel.to(matchHistory.length - 1);
+      } else {
+        matchHistoryCarousel.append(
+          generateGameRoundMatchHistoryDiv(gameRound, false, false),
+        );
+      }
     }
   }
 };
@@ -146,6 +158,7 @@ export const generateGameRoundMatchHistoryDiv = (
   gameRound,
   isFirst,
   isLast,
+  gameOutcome,
 ) => {
   // Make div for each match in match history
   const div = document.createElement('div');
@@ -161,6 +174,14 @@ export const generateGameRoundMatchHistoryDiv = (
 
   // Make p for round score
   const roundNumberP = document.createElement('p');
+  roundNumberP.className = 'round-number';
+  if (gameOutcome == 'win') {
+    roundNumberP.classList.add('text-success');
+  } else if (gameOutcome == 'loss') {
+    roundNumberP.classList.add('text-danger');
+  } else {
+    roundNumberP.classList.add('text-warning');
+  }
   roundNumberP.textContent = `Round ${gameRound.roundNumber}`;
   div.append(roundNumberP);
 

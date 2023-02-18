@@ -1,4 +1,5 @@
 **Rock Paper Scissors game**
+
 A Rock Paper Scissors game that you can play versus a computer built with Javascript, HTML and CSS.
 
 **Features**

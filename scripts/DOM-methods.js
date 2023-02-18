@@ -12,9 +12,9 @@ import { GameRound, loadMatchHistory, saveGameRound } from './gameState.js';
 
 const usernameForm = document.forms['username'];
 
-const myCarouselElement = document.querySelector('#matchCarousel');
+const matchCarouselElement = document.querySelector('#matchCarousel');
 
-const carousel = new bootstrap.Carousel(myCarouselElement, {
+const carousel = new bootstrap.Carousel(matchCarouselElement, {
   interval: 2000,
   touch: false,
 });

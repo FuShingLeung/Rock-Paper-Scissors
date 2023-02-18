@@ -96,10 +96,10 @@ export const onPlayClick = (userOutcome, matchHistoryCarousel) => {
   saveGameRound(gameRound);
 
   matchHistoryCarousel.append(
-    createMatchHistoryDiv(
-      createIcon(userOutcome, false),
-      createIcon(compOutcome, true),
-      matchHistoryCarousel.innerHTML === '',
+    generateGameRoundMatchHistoryDiv(
+      gameRound,
+      matchHistoryCarousel.innerHTML == '',
+      false,
     ),
   );
   carousel.to(roundNumber - 1);
@@ -131,23 +131,29 @@ export const loadSavedMatchHistory = (matchHistoryCarousel) => {
   for (let gameRound of matchHistory) {
     if (gameRound == matchHistory[matchHistory.length - 1]) {
       matchHistoryCarousel.append(
-        generateGameRoundMatchHistoryDiv(gameRound, true),
+        generateGameRoundMatchHistoryDiv(gameRound, false, true),
       );
       carousel.to(matchHistory.length - 1);
     } else {
       matchHistoryCarousel.append(
-        generateGameRoundMatchHistoryDiv(gameRound, false),
+        generateGameRoundMatchHistoryDiv(gameRound, false, false),
       );
     }
   }
 };
 
-export const generateGameRoundMatchHistoryDiv = (gameRound, isLast) => {
+export const generateGameRoundMatchHistoryDiv = (
+  gameRound,
+  isFirst,
+  isLast,
+) => {
   // Make div for each match in match history
   const div = document.createElement('div');
 
-  // Check if it is the last game round to add the active class
-  if (isLast) {
+  // Check if it is the first or last game round to add the active class
+  if (isFirst) {
+    div.className = 'carousel-item round-score active';
+  } else if (isLast) {
     div.className = 'carousel-item round-score active';
   } else {
     div.className = 'carousel-item round-score';
@@ -172,50 +178,6 @@ export const generateGameRoundMatchHistoryDiv = (gameRound, isLast) => {
     createIcon(gameRound.userOutcome, false),
     createIcon(gameRound.compOutcome, true),
   ];
-  for (const iconImage of iconsArray) {
-    iconImage.classList.add = 'icon';
-    iconDiv.append(iconImage);
-  }
-
-  div.append(iconDiv);
-
-  return div;
-};
-
-// Creates a div to store a match history
-export const createMatchHistoryDiv = (userImage, compImage, isFirst) => {
-  const username = getStorage('username');
-  const userScore = getStorage('userScore');
-  const compScore = getStorage('compScore');
-  const tieScore = getStorage('tieScore');
-
-  // Make div for each match in match history
-  const div = document.createElement('div');
-
-  if (isFirst) {
-    div.className = 'carousel-item round-score active';
-  } else {
-    div.className = 'carousel-item round-score';
-  }
-
-  // Make p for round score
-  const roundNumber =
-    parseInt(userScore) + parseInt(compScore) + parseInt(tieScore);
-  const roundNumberP = document.createElement('p');
-  roundNumberP.textContent = `Round ${roundNumber}`;
-  div.append(roundNumberP);
-
-  // Make p for user score, comp score and tie score
-  const individualScoreP = document.createElement('p');
-  individualScoreP.className = 'individual-score';
-  individualScoreP.textContent = `${username}: ${userScore}  Comp: ${compScore}  Ties: ${tieScore}`;
-  div.append(individualScoreP);
-
-  // Make div and add user icon and comp icon
-  const iconDiv = document.createElement('div');
-  iconDiv.className = 'iconDiv';
-
-  const iconsArray = [userImage, compImage];
   for (const iconImage of iconsArray) {
     iconImage.classList.add = 'icon';
     iconDiv.append(iconImage);

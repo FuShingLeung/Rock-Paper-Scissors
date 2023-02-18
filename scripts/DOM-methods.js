@@ -14,7 +14,7 @@ const usernameForm = document.forms['username'];
 
 const myCarouselElement = document.querySelector('#matchCarousel');
 
-export const carousel = new bootstrap.Carousel(myCarouselElement, {
+const carousel = new bootstrap.Carousel(myCarouselElement, {
   interval: 2000,
   touch: false,
 });
@@ -124,6 +124,22 @@ export const createIcon = (option, isSolid) => {
     icon.classList.add('fa-hand-scissors');
   }
   return icon;
+};
+
+export const loadSavedMatchHistory = (matchHistoryCarousel) => {
+  const matchHistory = loadMatchHistory();
+  for (let gameRound of matchHistory) {
+    if (gameRound == matchHistory[matchHistory.length - 1]) {
+      matchHistoryCarousel.append(
+        generateGameRoundMatchHistoryDiv(gameRound, true),
+      );
+      carousel.to(matchHistory.length - 1);
+    } else {
+      matchHistoryCarousel.append(
+        generateGameRoundMatchHistoryDiv(gameRound, false),
+      );
+    }
+  }
 };
 
 export const generateGameRoundMatchHistoryDiv = (gameRound, isLast) => {

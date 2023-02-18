@@ -1,4 +1,4 @@
-import { setStorage, getStorage, removeStorage } from './storage.js';
+import { setStorage, getStorage } from './storage.js';
 
 export class GameRound {
   constructor(

@@ -79,7 +79,6 @@ export const onPlayClick = (userOutcome, matchHistoryCarousel) => {
   console.log(roundNumber);
 
   const compOutcome = performCompRoll();
-  updateOutcomeIcons(userOutcome, compOutcome);
 
   updateGameState(determineResult(userOutcome, compOutcome));
   updateScoreText();
@@ -95,6 +94,7 @@ export const onPlayClick = (userOutcome, matchHistoryCarousel) => {
   );
   saveGameRound(gameRound);
 
+  updateOutcomeIcons(gameRound.userOutcome, gameRound.compOutcome);
   matchHistoryCarousel.append(
     generateGameRoundMatchHistoryDiv(
       gameRound,

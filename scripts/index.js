@@ -86,6 +86,11 @@ const initialiseGame = () => {
     showGame();
     checkHasGameFinished();
     loadSavedMatchHistory(matchHistoryCarousel);
+    const gameRound = loadMatchHistory();
+    updateOutcomeIcons(
+      gameRound[gameRound.length - 1].userOutcome,
+      gameRound[gameRound.length - 1].compOutcome,
+    );
   }
 };
 

@@ -8,13 +8,13 @@ import {
 
 import { setStorage, getStorage } from './storage.js';
 
-import { GameRound, saveGameRound } from './gameState.js';
-
-const myCarouselElement = document.querySelector('#matchCarousel');
+import { GameRound, loadMatchHistory, saveGameRound } from './gameState.js';
 
 const usernameForm = document.forms['username'];
 
-const carousel = new bootstrap.Carousel(myCarouselElement, {
+const myCarouselElement = document.querySelector('#matchCarousel');
+
+export const carousel = new bootstrap.Carousel(myCarouselElement, {
   interval: 2000,
   touch: false,
 });
@@ -86,6 +86,7 @@ export const onPlayClick = (userOutcome, matchHistoryCarousel) => {
 
   const gameRound = new GameRound(
     roundNumber,
+    getStorage('username'),
     getStorage('userScore'),
     getStorage('compScore'),
     getStorage('tieScore'),
@@ -123,6 +124,46 @@ export const createIcon = (option, isSolid) => {
     icon.classList.add('fa-hand-scissors');
   }
   return icon;
+};
+
+export const generateGameRoundMatchHistoryDiv = (gameRound, isLast) => {
+  // Make div for each match in match history
+  const div = document.createElement('div');
+
+  // Check if it is the last game round to add the active class
+  if (isLast) {
+    div.className = 'carousel-item round-score active';
+  } else {
+    div.className = 'carousel-item round-score';
+  }
+
+  // Make p for round score
+  const roundNumberP = document.createElement('p');
+  roundNumberP.textContent = `Round ${gameRound.roundNumber}`;
+  div.append(roundNumberP);
+
+  // Make p for user score, comp score and tie score
+  const individualScoreP = document.createElement('p');
+  individualScoreP.className = 'individual-score';
+  individualScoreP.textContent = `${gameRound.username}: ${gameRound.userScore}  Comp: ${gameRound.compScore}  Ties: ${gameRound.tieScore}`;
+  div.append(individualScoreP);
+
+  // Make div and add user icon and comp icon
+  const iconDiv = document.createElement('div');
+  iconDiv.className = 'iconDiv';
+
+  const iconsArray = [
+    createIcon(gameRound.userOutcome, false),
+    createIcon(gameRound.compOutcome, true),
+  ];
+  for (const iconImage of iconsArray) {
+    iconImage.classList.add = 'icon';
+    iconDiv.append(iconImage);
+  }
+
+  div.append(iconDiv);
+
+  return div;
 };
 
 // Creates a div to store a match history

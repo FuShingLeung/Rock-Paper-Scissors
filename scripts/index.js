@@ -3,9 +3,13 @@ import {
   onPlayClick,
   checkHasGameFinished,
   onGamemodeClick,
+  generateGameRoundMatchHistoryDiv,
+  carousel,
 } from './DOM-methods.js';
 
 import { initialiseLocalStorage, setStorage, getStorage } from './storage.js';
+
+import { loadMatchHistory } from './gameState.js';
 
 // State
 
@@ -81,6 +85,19 @@ const initialiseGame = () => {
   } else {
     showGame();
     checkHasGameFinished();
+    const matchHistory = loadMatchHistory();
+    for (let gameRound of matchHistory) {
+      if (gameRound == matchHistory[matchHistory.length - 1]) {
+        matchHistoryCarousel.append(
+          generateGameRoundMatchHistoryDiv(gameRound, true),
+        );
+        carousel.to(matchHistory.length - 1);
+      } else {
+        matchHistoryCarousel.append(
+          generateGameRoundMatchHistoryDiv(gameRound, false),
+        );
+      }
+    }
   }
 };
 

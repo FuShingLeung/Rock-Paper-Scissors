@@ -3,6 +3,7 @@ import { setStorage, getStorage, removeStorage } from './storage.js';
 export class GameRound {
   constructor(
     roundNumber,
+    username,
     userScore,
     compScore,
     tieScore,
@@ -10,6 +11,7 @@ export class GameRound {
     compOutcome,
   ) {
     this.roundNumber = roundNumber;
+    this.username = username;
     this.userScore = userScore;
     this.compScore = compScore;
     this.tieScore = tieScore;
@@ -28,4 +30,8 @@ export const saveGameRound = (gameRound) => {
     currentMatchHistory.push(gameRound);
     setStorage('matchHistory', JSON.stringify(currentMatchHistory));
   }
+};
+
+export const loadMatchHistory = () => {
+  return JSON.parse(getStorage('matchHistory'));
 };

@@ -1,18 +1,20 @@
 import {
-  updateOutcomeIcons,
+  updateCurrentRoundOutcomeIcons,
   updateGameState,
-  updateScore,
+  updateScoreText,
   updateResultScreen,
   showGame,
 } from './index.js';
 
 import { setStorage, getStorage } from './storage.js';
 
-const myCarouselElement = document.querySelector('#matchCarousel');
+import { GameRound, loadMatchHistory, saveGameRound } from './gameState.js';
 
 const usernameForm = document.forms['username'];
 
-const carousel = new bootstrap.Carousel(myCarouselElement, {
+const matchCarouselElement = document.querySelector('#matchCarousel');
+
+const matchHistoryCarousel = new bootstrap.Carousel(matchCarouselElement, {
   interval: 2000,
   touch: false,
 });
@@ -59,36 +61,45 @@ const setUsername = (form) => {
   }
 };
 
-//
 export const onGamemodeClick = (gamemode) => {
   if (!setUsername(usernameForm)) {
     window.alert('Please enter a username!');
   } else {
     setStorage('gamemode', gamemode);
-    updateScore();
+    updateScoreText();
     showGame();
   }
 };
 
 // Function
-export const onPlayClick = (userOutcome, matchHistoryCarousel) => {
+export const onPlayClick = (userOutcome, matchHistoryCarouselDiv) => {
   let roundNumber = getStorage('roundNumber');
   setStorage('roundNumber', ++roundNumber);
 
   const compOutcome = performCompRoll();
-  updateOutcomeIcons(userOutcome, compOutcome);
 
   updateGameState(determineResult(userOutcome, compOutcome));
-  updateScore();
+  updateScoreText();
 
-  matchHistoryCarousel.append(
-    createMatchHistoryDiv(
-      createIcon(userOutcome, false),
-      createIcon(compOutcome, true),
-      matchHistoryCarousel.innerHTML === '',
+  const gameRound = new GameRound(
+    roundNumber,
+    getStorage('username'),
+    getStorage('userScore'),
+    getStorage('compScore'),
+    getStorage('tieScore'),
+    userOutcome,
+    compOutcome,
+  );
+  saveGameRound(gameRound);
+
+  updateCurrentRoundOutcomeIcons(gameRound.userOutcome, gameRound.compOutcome);
+  matchHistoryCarouselDiv.append(
+    generateMatchHistoryGameRoundDiv(
+      gameRound,
+      matchHistoryCarouselDiv.innerHTML == '',
     ),
   );
-  carousel.to(roundNumber - 1);
+  matchHistoryCarousel.to(roundNumber - 1);
 };
 
 // Creates an icon that can be either rock paper or scissors
@@ -112,40 +123,73 @@ export const createIcon = (option, isSolid) => {
   return icon;
 };
 
-// Creates a div to store a match history
-export const createMatchHistoryDiv = (userImage, compImage, isFirst) => {
-  const username = getStorage('username');
-  const userScore = getStorage('userScore');
-  const compScore = getStorage('compScore');
-  const tieScore = getStorage('tieScore');
+export const loadPreviousMatchOutcome = () => {
+  if (getStorage('matchHistory')) {
+    const matchHistory = loadMatchHistory();
+    updateCurrentRoundOutcomeIcons(
+      matchHistory[matchHistory.length - 1].userOutcome,
+      matchHistory[matchHistory.length - 1].compOutcome,
+    );
+  }
+};
 
+export const loadSavedMatchHistory = (matchHistoryCarouselDiv) => {
+  if (getStorage('matchHistory')) {
+    const matchHistory = loadMatchHistory();
+    for (let gameRound of matchHistory) {
+      if (gameRound == matchHistory[matchHistory.length - 1]) {
+        matchHistoryCarouselDiv.append(
+          generateMatchHistoryGameRoundDiv(gameRound, true),
+        );
+        matchHistoryCarousel.to(matchHistory.length - 1);
+      } else {
+        matchHistoryCarouselDiv.append(
+          generateMatchHistoryGameRoundDiv(gameRound, false),
+        );
+      }
+    }
+  }
+};
+
+export const generateMatchHistoryGameRoundDiv = (gameRound, setActive) => {
   // Make div for each match in match history
   const div = document.createElement('div');
 
-  if (isFirst) {
+  // Check if it is the first or last game round to add the active class
+  if (setActive) {
     div.className = 'carousel-item round-score active';
   } else {
     div.className = 'carousel-item round-score';
   }
 
   // Make p for round score
-  const roundNumber =
-    parseInt(userScore) + parseInt(compScore) + parseInt(tieScore);
   const roundNumberP = document.createElement('p');
-  roundNumberP.textContent = `Round ${roundNumber}`;
+  roundNumberP.className = 'round-number';
+  const result = determineResult(gameRound.userOutcome, gameRound.compOutcome);
+  if (result == 'win') {
+    roundNumberP.style = 'color: hsl(120, 60%, 50%);';
+  } else if (result == 'loss') {
+    roundNumberP.style = 'color: hsl(0, 60%, 50%);';
+  } else {
+    roundNumberP.style = 'color: hsl(60, 50%, 50%);';
+  }
+  roundNumberP.textContent = `Round ${gameRound.roundNumber}`;
   div.append(roundNumberP);
 
   // Make p for user score, comp score and tie score
   const individualScoreP = document.createElement('p');
   individualScoreP.className = 'individual-score';
-  individualScoreP.textContent = `${username}: ${userScore}  Comp: ${compScore}  Ties: ${tieScore}`;
+  individualScoreP.textContent = `${gameRound.username}: ${gameRound.userScore}  Comp: ${gameRound.compScore}  Ties: ${gameRound.tieScore}`;
   div.append(individualScoreP);
 
   // Make div and add user icon and comp icon
   const iconDiv = document.createElement('div');
   iconDiv.className = 'iconDiv';
 
-  const iconsArray = [userImage, compImage];
+  const iconsArray = [
+    createIcon(gameRound.userOutcome, false),
+    createIcon(gameRound.compOutcome, true),
+  ];
   for (const iconImage of iconsArray) {
     iconImage.classList.add = 'icon';
     iconDiv.append(iconImage);

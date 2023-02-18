@@ -6,6 +6,7 @@ export const initialiseLocalStorage = () => {
   setStorage('username', '');
   setStorage('roundNumber', 0);
   setStorage('gameAlert', 'Rock, Paper or Scissors?');
+  setStorage('matchHistory', '');
   removeStorage('gamemode');
 };
 
